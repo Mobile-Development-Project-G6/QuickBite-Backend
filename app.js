@@ -31,3 +31,29 @@ mongoose
 app.listen(port, () => {
   console.log(`Port is running at ${port}`);
 });
+// My routes
+const userRouter = require("./routes/userRouter");
+const customerOrderRouter = require("./routes/customerOrderRouter");
+const authRouter = require("./routes/authRouter");
+
+app.use(cors());
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+app.use(cookieParser());
+app.use(express.json());
+
+// middlewares
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+// routes
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/customer-order", customerOrderRouter);
+app.use("/api/v1/", authRouter);
