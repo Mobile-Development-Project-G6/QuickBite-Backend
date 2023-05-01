@@ -1,44 +1,50 @@
-const CustomerOrder = require("../models/customerOrderModel");
 const mongoose = require("mongoose");
 
-exports.getOrders = async (req, res) => {
-  try {
-    let orders = await CustomerOrder.find({
-      _id: req.params.id
-    }).sort({ palced_time: "desc" });
+const itemSchema = new mongoose.Schema(
+  {
+    user: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    price: {
+      type: Number,
+      default: 0,
+      required: true,
+      trim: true,
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    image: {
+      type: String,
+    },
+    config: [
+      {
+        name: String,
+        price: Number,
+      },
+    ],
+    addons: [
+      {
+        name: String,
+        price: Number,
+      },
+    ],
+    description: {
+      type: String
+    },
+    bestselling: {
+      type: Boolean,
+      default: false,
+    }
+  },
+  { timestamps: true }
+);
 
-    res.status(200).json({
-      status: "Success",
-      data: orders,
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "failed",
-      message: err,
-    });
-  }
-};
-exports.createOrder = async (req, res) => {
-  try {
-    let order = await CustomerOrder.create({
-      orderType: req.body.orderType,
-      status: req.body.status,
-      price: req.body.price,
-      user: mongoose.Types.ObjectId(req.body.user),
-      items: req.body.items,
-      placed_time: req.body.placed_time,
-      address: req.body.address,
-      userId : req.body.userId
-    });
-    res.status(201).json({
-      status: "Success",
-      message: "Order added to DB",
-      data: order,
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: "Error",
-      err,
-    });
-  }
-};
+module.exports = mongoose.model("Item", itemSchema);
